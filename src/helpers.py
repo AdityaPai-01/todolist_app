@@ -46,11 +46,11 @@ def check_username_validity(username):
 
 def login():
     while True:
-        Username = input("Enter your username: ")
+        Username = input("Enter your username: ").strip()
         if Username == '!Q':
             clear()
             return False
-        Password = input("Enter your password: ")
+        Password = input("Enter your password: ").strip()
         LoginMethod = User_Manager.login(Username, Password)
         print(LoginMethod["message"])
         time.sleep(1)
@@ -59,7 +59,7 @@ def login():
             return True
 
 
-def regiser():
+def register():
     while True:
         Username = input("Enter username: ").strip()
         if Username == '!Q':
@@ -70,12 +70,13 @@ def regiser():
         print(u_validity["message"] if not u_validity["message"] == None else f"-"*15)
 
         if u_validity["status"]:
-            Password = input("Enter password: ")
+            Password = input("Enter password: ").strip()
             RegisterMethod = User_Manager.register(Username, Password)
 
             print(RegisterMethod["message"]), time.sleep(2), print("Please login again."), time.sleep(2)
             clear()
             if RegisterMethod["status"]:
+                User_Manager.authdata()
                 return True
             
 
