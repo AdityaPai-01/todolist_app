@@ -4,7 +4,7 @@ from model.task import Task
 logger = logging.getLogger(__name__)
 
 class TaskManager:
-    def __init__(self, list_id, list_name="My List 1"):
+    def __init__(self, list_id, list_name):
         self.list_name = list_name
         self.list_id = list_id
         self.tasklist = []

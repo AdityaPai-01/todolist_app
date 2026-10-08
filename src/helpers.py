@@ -3,7 +3,6 @@ import time, os, sys
 
 from manager.user_manager import UserManager
 from manager.data_manager import JSONStorage
-from manager.task_manager import TaskManager
 from manager.list_manager import ListManager
 
 if getattr(sys, 'frozen', False): #Running script as .exe
@@ -26,7 +25,6 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
     return "1: clear terminal executed"
 
-
 def check_username_validity(username):
     specials = "!@#$%^&*()_+=-<>,?/'\'"
     if not username:
@@ -43,7 +41,6 @@ def check_username_validity(username):
         return {"message": None,
                 "status": True}
     
-
 def login():
     while True:
         Username = input("Enter your username: ").strip()
@@ -57,29 +54,24 @@ def login():
         clear()
         if LoginMethod["status"]:
             return True
-
-
+        
 def register():
     while True:
         Username = input("Enter username: ").strip()
         if Username == '!Q':
             clear()
-            return True
-        
+            return True        
         u_validity = check_username_validity(Username)
         print(u_validity["message"] if not u_validity["message"] == None else f"-"*15)
-
         if u_validity["status"]:
             Password = input("Enter password: ").strip()
             RegisterMethod = User_Manager.register(Username, Password)
-
             print(RegisterMethod["message"]), time.sleep(2), print("Please login again."), time.sleep(2)
             clear()
             if RegisterMethod["status"]:
                 User_Manager.authdata()
                 return True
             
-
 def save_udata():
     userdata_export = User_Manager.exportData()
     if userdata_export["status"]:
@@ -96,4 +88,6 @@ def save_tdata(tlist_obj):
 def initial_interface():
     if not List_Manager.lists:
         List_Manager.new_list("My List 1")
-    pass
+        save_ldata()
+    current_list = List_Manager.return_lists()[0]
+    

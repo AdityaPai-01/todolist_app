@@ -7,10 +7,10 @@ class ListManager:
     def __init__(self):
         self.lists = {}
 
-    def new_list(self, list_name):
+    def new_list(self, list_name="My List 1"):
         if list_name not in self.lists.values():
             tasklist = TaskManager(list_name=list_name, list_id=uuid.uuid4())
-            self.lists.update({tasklist.list_id : tasklist.list_name})
+            self.lists.update({tasklist.list_id : tasklist})
             logger.info("CREATE LIST: New list created with title: <{list_name}>", list_name)
             return {"message": f"Created list with title <{list_name}>",
                     "status": True}
