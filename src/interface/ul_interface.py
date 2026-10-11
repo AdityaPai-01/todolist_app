@@ -1,9 +1,11 @@
+# This module contains functions related to the user-login interface.
+# Once the user logs in, the authentication data is passed to the todolist application to load authenticated data.
+
 from pathlib import Path
 import time, os, sys
 
 from manager.user_manager import UserManager
 from manager.data_manager import JSONStorage
-from manager.list_manager import ListManager
 
 if getattr(sys, 'frozen', False): #Running script as .exe
     BaseDirectory = Path(sys.executable).resolve().parent.parent
@@ -12,19 +14,16 @@ else: #Running script as a script
 
 DataDir = BaseDirectory / "data"
 DataDir.mkdir(parents=True, exist_ok=True)
-List_Manager = ListManager()
-User_Manager = UserManager()
-print(DataDir)
 
+User_Manager = UserManager()
 userdata_storage = JSONStorage(DataDir/"user_data.json")
-listdata_storage = JSONStorage(DataDir / "list_data.json")
-taskdata_storage = JSONStorage(DataDir / "task_data.json")
 
 # Clearing the terminal for cleaner UI.
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
     return "1: clear terminal executed"
 
+# Checks the validity of the username created by the user
 def check_username_validity(username):
     specials = "!@#$%^&*()_+=-<>,?/'\'"
     if not username:
@@ -40,7 +39,8 @@ def check_username_validity(username):
     else:
         return {"message": None,
                 "status": True}
-    
+
+# Allows the user to login to their account   
 def login():
     while True:
         Username = input("Enter your username: ").strip()
@@ -54,7 +54,8 @@ def login():
         clear()
         if LoginMethod["status"]:
             return True
-        
+
+# Allows the new user to create a new account      
 def register():
     while True:
         Username = input("Enter username: ").strip()
@@ -71,23 +72,12 @@ def register():
             if RegisterMethod["status"]:
                 User_Manager.authdata()
                 return True
-            
+
+# Saves the data created during the runtime of the process (if any)            
 def save_udata():
     userdata_export = User_Manager.exportData()
     if userdata_export["status"]:
         userdata_storage.save_data(userdata_export["data"])
 
-def save_ldata():
-    listdata_export = List_Manager.export_data()
-    if listdata_export["status"]:
-        listdata_storage.save_data({listdata_export["data"]})
-
-def save_tdata(tlist_obj):
-    taskdata_export = tlist_obj.export_data()
-
-def initial_interface():
-    if not List_Manager.lists:
-        List_Manager.new_list("My List 1")
-        save_ldata()
-    current_list = List_Manager.return_lists()[0]
-    
+def U_main():
+    pass
