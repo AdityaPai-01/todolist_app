@@ -20,7 +20,9 @@ class UserManager():
             logger.warning("USER LOGIN: Incorrect password used for user '%s'", username)
             return {"message": "Invalid Password",
                     "status": False}
-        self.authenticatedUser.append(username)
+        for user in self.users.values():
+            if user.username == username:
+                self.authenticatedUser.append(user.userID)
         logger.info("USER LOGIN: User logged in successfully")
         return {"message": "Login successful!",
                 "status": True}
@@ -48,8 +50,8 @@ class UserManager():
             return {"message":None,
                     "status": True}
         except Exception as e:
-            logger.error("USER DATA IMPORT: User data import failed: %s", e)
-            return {"message":e,
+            logger.error("USER DATA IMPORT: User data import failed: %s", f"{type(e).__name__}:{e}")
+            return {"message": f"{type(e).__name__}:{e}",
                     "status": False}
 
     # Takes the data created/modified during the business functions and converts into locally storable data, to pass on to the storage class to store.
@@ -64,9 +66,10 @@ class UserManager():
                     "status": True,
                     "data": rawdata}
         except Exception as e:
-            logger.error("USER DATA EXPORT: Could not export user data: %s", e)
-            return {"message": f"Could not export data.\n{e}",
-                    "status": False}
+            logger.error("USER DATA EXPORT: Could not export user data: %s", f"{type(e).__name__}:{e}")
+            return {"message": f"Could not export data.\n{type(e).__name__}:{e}",
+                    "status": False,
+                    "data": {}}
     
     #Seperates and collects only the data required for login/registeration functions
     def authdata(self):
@@ -78,6 +81,6 @@ class UserManager():
             return {"message": None,
                     "status": True}
         except Exception as e:
-            logger.error("USER DATA AUTHENTICATION: Authentication data loading failed: %s", e)
-            return {"message": e,
+            logger.error("USER DATA AUTHENTICATION: Authentication data loading failed: %s", f"{type(e).__name__}:{e}")
+            return {"message": f"{type(e).__name__}:{e}",
                     "status": False}

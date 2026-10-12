@@ -6,17 +6,22 @@ from manager.list_manager import ListManager
 from manager.task_manager import TaskManager
 
 if getattr(sys, 'frozen', False): #Running script as .exe
-    BaseDirectory = Path(sys.executable).resolve().parent.parent
+    BaseDirectory = Path(sys.executable).resolve().parent.parent.parent
 else: #Running script as a script
-    BaseDirectory = Path(__file__).resolve().parent.parent
-
-DataDir = BaseDirectory / "data"
-DataDir.mkdir(parents=True, exist_ok=True)
+    BaseDirectory = Path(__file__).resolve().parent.parent.parent
 
 List_Manager = ListManager()
-listdata_storage = JSONStorage(DataDir / "list_data.json")
 
-def save_ldata():
+def init(user_id):
+    # Create storage only after the authenticated user's ID is available.
+    DataDir = BaseDirectory / "data" / user_id
+    DataDir.mkdir(parents=True, exist_ok=True)
+    return JSONStorage(DataDir / "list_data.json")
+
+def save_ldata(storage):
     listdata_export = List_Manager.export_data()
     if listdata_export["status"]:
-        listdata_storage.save_data({listdata_export["data"]})
+        storage.save_data({listdata_export["data"]})
+
+def app(condition):
+    pass

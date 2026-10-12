@@ -18,7 +18,8 @@ class JSONStorage():
                 return {"message": None,
                         "status": True,
                         "data": {}}
-            
+
+            # Checks whether the file has valid data or not
             with open(self.dataPath, "r") as dataFile:
                 data = json.load(dataFile)
                 logger.info("Data loading: Data loaded successfully")
@@ -26,17 +27,17 @@ class JSONStorage():
                         "status": True,
                         "data": data}
         except Exception as e:
-            logger.error("Data loading: Data loading failed: %s", e)
-            return {"message": e,
+            logger.error("Data loading: Data loading failed: %s", f"{type(e).__name__}:{e}")
+            return {"message": f"{type(e).__name__}:{e}",
                     "status": False,
-                    "data": None}
+                    "data": {}}
 
     # Saves the data passed by the user manager class
     def save_data(self, rawData):
         try:
             if self.dataPath.exists():
                 with open(self.dataPath, "w") as dataFile:
-                    json.dump(rawData["data"], dataFile, indent=4)
+                    json.dump(rawData, dataFile, indent=4)
                 logger.info("Data saving: Data saved successfully")
                 return {"message": None,
                         "status": True}
@@ -44,6 +45,6 @@ class JSONStorage():
             return {"message": "Data file does not exist",
                     "status": False}
         except Exception as e:
-            logger.error("Data saving: Data saving failed: %s", e)
-            return {"message": e,
+            logger.error("Data saving: Data saving failed: %s", f"{type(e).__name__}:{e}")
+            return {"message": f"{type(e).__name__}:{e}",
                     "status": False}

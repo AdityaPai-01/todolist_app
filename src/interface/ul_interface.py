@@ -8,9 +8,9 @@ from manager.user_manager import UserManager
 from manager.data_manager import JSONStorage
 
 if getattr(sys, 'frozen', False): #Running script as .exe
-    BaseDirectory = Path(sys.executable).resolve().parent.parent
+    BaseDirectory = Path(sys.executable).resolve().parent.parent.parent
 else: #Running script as a script
-    BaseDirectory = Path(__file__).resolve().parent.parent
+    BaseDirectory = Path(__file__).resolve().parent.parent.parent
 
 DataDir = BaseDirectory / "data"
 DataDir.mkdir(parents=True, exist_ok=True)
@@ -33,7 +33,7 @@ def check_username_validity(username):
         return {"message": "Your username must contain minimum 8 characters and maximum 20 characters!",
                 "status": False}
     for sp in specials:
-        if sp in username:
+        if sp in username and sp not in "._":
             return {"message": "Special characters except '.' and '_' aren't allowed in usernames!",
                     "status": False}
     else:
@@ -46,14 +46,16 @@ def login():
         Username = input("Enter your username: ").strip()
         if Username == '!Q':
             clear()
-            return False
+            return {"status": False,
+                    "data": None}
         Password = input("Enter your password: ").strip()
         LoginMethod = User_Manager.login(Username, Password)
         print(LoginMethod["message"])
         time.sleep(1)
         clear()
         if LoginMethod["status"]:
-            return True
+            return {"status": True,
+                    "data":User_Manager.authenticatedUser[0]}
 
 # Allows the new user to create a new account      
 def register():
@@ -61,7 +63,7 @@ def register():
         Username = input("Enter username: ").strip()
         if Username == '!Q':
             clear()
-            return True        
+            return False        
         u_validity = check_username_validity(Username)
         print(u_validity["message"] if not u_validity["message"] == None else f"-"*15)
         if u_validity["status"]:
@@ -78,6 +80,33 @@ def save_udata():
     userdata_export = User_Manager.exportData()
     if userdata_export["status"]:
         userdata_storage.save_data(userdata_export["data"])
+        return {"status": True,
+                "message":None}
+    else:
+        print(userdata_export)
+        return {"status": False,
+                "maessage": userdata_export["message"]}
 
 def U_main():
-    pass
+    print(DataDir)
+    while True:
+        print("-"*15,"WELCOME TO PyLISTS", "-"*15)
+        option = input("Login or register(L/R/Q for exit) >>>: ").upper().strip()
+        if option == "L":
+            loginmethod = login()
+            if loginmethod["status"]:
+                return {"status":True,
+                        "data":loginmethod["data"],
+                        "message": None}
+        elif option == "R":
+            if register():
+                save_udata()
+        elif option == "Q":
+            return {"status": False,
+                    "data": None,
+                    "message": "user terminated login process"}
+        else:
+            print("INVALID OPTION!")
+        print()
+        time.sleep(2)
+        clear()

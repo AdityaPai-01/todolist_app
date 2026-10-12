@@ -64,7 +64,7 @@ class ListManager:
                     "data": data}
         
         except Exception as e:
-            logger.error(f"DATA EXPORT: Failed to export data: {e}")
+            logger.error(f"DATA EXPORT: Failed to export data: {type(e).__name__}:{e}")
             return {"message": "something went wrong.",
                     "status": False,
                     "data": {}}
@@ -79,7 +79,7 @@ class ListManager:
                     "status": True}
         
         except Exception as e:
-            logger.error(f"DATA IMPORT: Failed to import data: {e}")
+            logger.error(f"DATA IMPORT: Failed to import data: {type(e).__name__}:{e}")
             return {"message": "something went wrong.",
                     "status": False}
 

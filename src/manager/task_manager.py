@@ -64,7 +64,7 @@ class TaskManager:
                     "data": data}
 
         except Exception as e:
-            logger.error(f"TASK DATA EXPORT: Failed to export data: {e}")
+            logger.error(f"TASK DATA EXPORT: Failed to export data: {type(e).__name__}:{e}")
             return {"message": "something went wrong.",
                     "status": False,
                     "data": {}}
@@ -82,7 +82,7 @@ class TaskManager:
                     "status": True}
 
         except Exception as e:
-            logger.error(f"TASK DATA IMPORT: Failed to import data: {e}")
+            logger.error(f"TASK DATA IMPORT: Failed to import data: {type(e).__name__}:{e}")
             return {"message": "something went wrong.",
                     "status": False}
 

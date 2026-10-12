@@ -10,5 +10,5 @@ def setup_log():
                         format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
                         handlers=[logging.FileHandler(logfile, encoding='utf-8')])
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error: {type(e).__name__}:{e}"
     
