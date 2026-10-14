@@ -65,14 +65,14 @@ app_run = False
 if __name__ == '__main__':
     setup_log()
     auth = user_auth_init()
-    if auth.get("status"):
-        # Load the user's lists only after authentication succeeds.
-        list_init = list_manager_init(auth["data"])
-        if list_init.get("status"):
-            print(auth.get("data"))
-        else:
-            print(list_init.get("message"))
-    else:
+    if  not auth.get("status"):
         print(auth.get("message"))
+        
+    # Load the user's lists only after authentication succeeds.
+    list_init = list_manager_init(auth["data"])
+    if not list_init.get("status"):
+        print(list_init.get("message"))
+    print(auth.get("data"))
+        
 app(app_run)
 logger.info("MAIN: application closed.")
