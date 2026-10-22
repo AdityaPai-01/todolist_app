@@ -6,9 +6,15 @@ from logging_config import setup_log
 
 logger = logging.getLogger(__name__)
 
+# Initializes the user-management class
+"""
+    - userdata_storage (data manager object) loads data from the userdata file
+    - the data is then transfered to the user_manager object, which will then be used for authentication
+    - When the user is authenticated, the function returns the authenticated user's ID
+"""
 def user_auth_init():
     try:
-        userdata_import = User_Manager.importData(userdata_storage.load_data()["data"])
+        userdata_import = User_Manager.importData(userdata_storage.load_data()["data"]) 
         auth_data = User_Manager.authdata()
         if userdata_import["status"] and auth_data["status"]:
             logger.info("INITIALIZE: User Authentication initialised successfully.")
@@ -33,7 +39,10 @@ def user_auth_init():
                 "data": None,
                 "message": f"{type(e).__name__}:{e}"}
 
-
+"""
+    - Initialises the authenticated user's list data management object
+    - Data is loaded, and passed to list manager for further use
+"""
 def list_manager_init(user_id):
     try:
         storage = init(user_id)
@@ -72,7 +81,6 @@ if __name__ == '__main__':
     list_init = list_manager_init(auth["data"])
     if not list_init.get("status"):
         print(list_init.get("message"))
-    print(auth.get("data"))
         
 app(app_run)
 logger.info("MAIN: application closed.")
