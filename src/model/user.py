@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 
 class User:
     def __init__(self, username, password, metadata=None, userID=None):
-        self.userID = userID or str(uuid.uuid4())
+        self.userID = userID or "USER-"+str(uuid.uuid4())
         self.username = username
         self.password = password
         self.metadata = metadata

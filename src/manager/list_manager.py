@@ -9,7 +9,7 @@ class ListManager:
 
     def new_list(self, list_name="My List 1"):
         if list_name not in self.lists.values():
-            tasklist = TaskManager(list_name=list_name, list_id=uuid.uuid4())
+            tasklist = TaskManager(list_name=list_name, list_id=("TASKLIST-"+str(uuid.uuid4())))
             self.lists.update({tasklist.list_id : tasklist})
             logger.info(f"CREATE LIST: New list created with title: <{list_name}>")
             return {"message": f"Created list with title <{list_name}>",
@@ -58,8 +58,9 @@ class ListManager:
     def export_data(self):
         try:
             data = {}
-            for id in self.lists.keys():
-                data.update({id: {"list_id": id, "list_name": self.lists[id]}})
+            for k,v in self.lists.items():
+                taskdata = v.export_data()
+                data.update({str(k):{"list_id": str(v.list_id), "list_name": v.list_name, "tasks":taskdata["data"]}})
             logger.info(f"DATA EXPORT: Data exported successfully")
             return {"message": None,
                     "status": True,

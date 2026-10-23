@@ -46,11 +46,11 @@ def app(condition, data_manager, username):
     print(f"Hello {username}!")
     time.sleep(1.5)
     print("This is To-do list CLI in Python 3.14![Pithon :D]")
-    time.sleep(1.5)
+    time.sleep(2)
     print("If you need to know the functions/commands, enter '!h' in the command option!")
-    time.sleep(1.5)
+    time.sleep(2.5)
     print("Have a productive time with πTasks!")
-    time.sleep(1.5)
+    time.sleep(2.5)
     clear()
     while condition:
         working_list = List_Manager.new_list()["data"]
@@ -65,6 +65,7 @@ def app(condition, data_manager, username):
             at = add_task(working_list, (taskname, task_filter if task_filter else None, task_description if task_description else None))
             print(at["message"])
             save_ldata(data_manager)
+            time.sleep(2)
 
         elif option == "!st":
             tasks = show_tasks(working_list)

@@ -11,7 +11,7 @@ class TaskManager:
 
     # Adds a task to the todolist  
     def add_task(self, title, task_filter, task_desc):
-        task = Task(taskname=title, task_id=uuid.uuid4(), task_description= task_desc, task_filter=task_filter)
+        task = Task(taskname=title, task_id=("TASK-"+str(uuid.uuid4())), task_description= task_desc, task_filter=task_filter)
         self.tasklist.append(task)
         logger.info(f"TASK CREATE: Created new task with title <{title}> in list <{self.list_name}>")
         return {"message":'Task added to your todolist!',
@@ -52,7 +52,7 @@ class TaskManager:
             for task in self.tasklist:
                 task_dict = task.to_dict()
                 data[str(task_dict['task_id'])] = {
-                    "task_id": task_dict['task_id'],
+                    "task_id": str(task_dict['task_id']),
                     "task_name": task_dict['task_name'],
                     "task_status": task_dict['task_status'],
                     "task_filter": task_dict["task_filter"],
