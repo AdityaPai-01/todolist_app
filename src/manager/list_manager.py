@@ -11,12 +11,14 @@ class ListManager:
         if list_name not in self.lists.values():
             tasklist = TaskManager(list_name=list_name, list_id=uuid.uuid4())
             self.lists.update({tasklist.list_id : tasklist})
-            logger.info("CREATE LIST: New list created with title: <{list_name}>", list_name)
+            logger.info(f"CREATE LIST: New list created with title: <{list_name}>")
             return {"message": f"Created list with title <{list_name}>",
+                    "data": tasklist,
                     "status": True}
         
-        logger.warning("CREATE LIST: List with title <{list_name}> exists.", list_name)
+        logger.warning(f"CREATE LIST: List with title <{list_name}> exists.")
         return {"message": f"List with title <{list_name}> already exists!",
+                "data": None,
                 "status": False}
 
 

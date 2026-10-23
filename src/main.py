@@ -101,6 +101,8 @@ if __name__ == '__main__':
     list_init = list_manager_init(auth["data"])
     if not list_init.get("status"):
         print(list_init.get("message"))
-        
-app(app_run,None)
+
+    # Status true, app ready to work    
+    app_run = True
+    app(app_run,list_init.get("data"))
 logger.info("MAIN: application closed.")
