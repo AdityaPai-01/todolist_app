@@ -5,18 +5,8 @@ from pathlib import Path
 import time, os, sys
 
 from manager.user_manager import UserManager
-from manager.data_manager import JSONStorage
-
-if getattr(sys, 'frozen', False): #Running script as .exe
-    BaseDirectory = Path(sys.executable).resolve().parent.parent.parent
-else: #Running script as a script
-    BaseDirectory = Path(__file__).resolve().parent.parent.parent
-
-DataDir = BaseDirectory / "data"
-DataDir.mkdir(parents=True, exist_ok=True)
 
 User_Manager = UserManager()
-userdata_storage = JSONStorage(DataDir/"user_data.json")
 
 # Clearing the terminal for cleaner UI.
 def clear():
@@ -76,10 +66,10 @@ def register():
                 return True
 
 # Saves the data created during the runtime of the process (if any)            
-def save_udata():
+def save_udata(data_manager):
     userdata_export = User_Manager.exportData()
     if userdata_export["status"]:
-        userdata_storage.save_data(userdata_export["data"])
+        data_manager.save_data(userdata_export["data"])
         return {"status": True,
                 "message":None}
     else:
@@ -87,8 +77,7 @@ def save_udata():
         return {"status": False,
                 "maessage": userdata_export["message"]}
 
-def U_main():
-    print(DataDir)
+def U_main(data_manager):
     while True:
         print("-"*15,"WELCOME TO PyLISTS", "-"*15)
         option = input("Login or register(L/R/Q for exit) >>>: ").upper().strip()
@@ -100,7 +89,7 @@ def U_main():
                         "message": None}
         elif option == "R":
             if register():
-                save_udata()
+                save_udata(data_manager=data_manager)
         elif option == "Q":
             return {"status": False,
                     "data": None,

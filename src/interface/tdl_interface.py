@@ -12,16 +12,10 @@ else: #Running script as a script
 
 List_Manager = ListManager()
 
-def init(user_id):
-    # Create storage only after the authenticated user's ID is available.
-    DataDir = BaseDirectory / "data" / user_id
-    DataDir.mkdir(parents=True, exist_ok=True)
-    return JSONStorage(DataDir / "list_data.json")
-
-def save_ldata(storage):
+def save_ldata(data_manager):
     listdata_export = List_Manager.export_data()
     if listdata_export["status"]:
-        storage.save_data({listdata_export["data"]})
+        data_manager.save_data({listdata_export["data"]})
 
-def app(condition):
+def app(condition, data_manager):
     pass
