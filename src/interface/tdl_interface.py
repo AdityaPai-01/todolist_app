@@ -14,7 +14,7 @@ List_Manager = ListManager()
 def save_ldata(data_manager):
     listdata_export = List_Manager.export_data()
     if listdata_export["status"]:
-        data_manager.save_data({listdata_export["data"]})
+        data_manager.save_data(listdata_export.get("data"))
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
@@ -42,10 +42,19 @@ def show_tasks(list_object):
 def mark_done(list_object):
     pass
 
-def app(condition, data_manager):
+def app(condition, data_manager, username):
+    print(f"Hello {username}!")
+    time.sleep(1.5)
+    print("This is To-do list CLI in Python 3.14![Pithon :D]")
+    time.sleep(1.5)
+    print("If you need to know the functions/commands, enter '!h' in the command option!")
+    time.sleep(1.5)
+    print("Have a productive time with πTasks!")
+    time.sleep(1.5)
+    clear()
     while condition:
         working_list = List_Manager.new_list()["data"]
-        option = input("Enter an option: ").lower().strip()
+        option = input("Enter your option (type '!h' for help) >>>: ").lower().strip()
         if option == "!q":
             break
 

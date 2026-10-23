@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 class UserManager():
     def __init__(self):
         self.users = {} #Stores userdata()during the runtime of application
-        self.authenticatedUser = []
+        self.authenticatedUser = {}
         self.userauthdata = {}
 
     # Login function, enables the user to access the meta-data of the respective application
@@ -22,7 +22,7 @@ class UserManager():
                     "status": False}
         for user in self.users.values():
             if user.username == username:
-                self.authenticatedUser.append(user.userID)
+                self.authenticatedUser.update({"uid":user.userID, "uname":user.username})
         logger.info("USER LOGIN: User logged in successfully")
         return {"message": "Login successful!",
                 "status": True}

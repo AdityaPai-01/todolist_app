@@ -45,7 +45,7 @@ def login():
         clear()
         if LoginMethod["status"]:
             return {"status": True,
-                    "data":User_Manager.authenticatedUser[0]}
+                    "data":User_Manager.authenticatedUser}
 
 # Allows the new user to create a new account      
 def register():
@@ -55,7 +55,7 @@ def register():
             clear()
             return False        
         u_validity = check_username_validity(Username)
-        print(u_validity["message"] if not u_validity["message"] == None else f"-"*15)
+        print(u_validity["message"] if not u_validity["message"] == None else "",end="")
         if u_validity["status"]:
             Password = input("Enter password: ").strip()
             RegisterMethod = User_Manager.register(Username, Password)
@@ -82,12 +82,14 @@ def U_main(data_manager):
         print("-"*15,"WELCOME TO PyLISTS", "-"*15)
         option = input("Login or register(L/R/Q for exit) >>>: ").upper().strip()
         if option == "L":
+            clear()
             loginmethod = login()
             if loginmethod["status"]:
                 return {"status":True,
                         "data":loginmethod["data"],
                         "message": None}
         elif option == "R":
+            clear()
             if register():
                 save_udata(data_manager=data_manager)
         elif option == "Q":
