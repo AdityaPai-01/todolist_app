@@ -15,6 +15,12 @@ def save_ldata(data_manager):
     listdata_export = List_Manager.export_data()
     if listdata_export["status"]:
         data_manager.save_data(listdata_export.get("data"))
+
+def import_ldata(data_manager):
+    data_load = data_manager.load_data()
+    if data_load:
+        List_Manager.import_data(data_load["data"])
+
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
@@ -43,6 +49,7 @@ def mark_done(list_object):
     pass
 
 def app(condition, data_manager, username):
+    import_ldata(data_manager)
     print(f"Hello {username}!")
     time.sleep(1.5)
     print("This is To-do list CLI in Python 3.14![Pithon :D]")
@@ -53,7 +60,9 @@ def app(condition, data_manager, username):
     time.sleep(2.5)
     clear()
     while condition:
-        working_list = List_Manager.new_list()["data"]
+        working_list = List_Manager.new_list()
+        if not working_list["status"]:
+            working_list = List_Manager.load_lists()
         option = input("Enter your option (type '!h' for help) >>>: ").lower().strip()
         if option == "!q":
             break
@@ -61,14 +70,14 @@ def app(condition, data_manager, username):
         elif option == "!nt":
             taskname = input("enter task title: ").strip()
             task_filter = input("enter task filter: ").strip()
-            task_description = input("enter task description")
-            at = add_task(working_list, (taskname, task_filter if task_filter else None, task_description if task_description else None))
+            task_description = input("enter task description: ")
+            at = add_task(working_list["data"], (taskname, task_filter if task_filter else None, task_description if task_description else None))
             print(at["message"])
             save_ldata(data_manager)
             time.sleep(2)
 
         elif option == "!st":
-            tasks = show_tasks(working_list)
+            tasks = show_tasks(working_list["data"])
             for task in tasks:
                 print(task)
             input("enter anything: ")

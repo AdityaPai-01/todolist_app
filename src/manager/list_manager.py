@@ -8,18 +8,19 @@ class ListManager:
         self.lists = {}
 
     def new_list(self, list_name="My List 1"):
-        if list_name not in self.lists.values():
-            tasklist = TaskManager(list_name=list_name, list_id=("TASKLIST-"+str(uuid.uuid4())))
-            self.lists.update({tasklist.list_id : tasklist})
-            logger.info(f"CREATE LIST: New list created with title: <{list_name}>")
-            return {"message": f"Created list with title <{list_name}>",
-                    "data": tasklist,
-                    "status": True}
+        for values in self.lists.values():
+            if list_name not in values["list_name"]:
+                tasklist = TaskManager(list_name=list_name, list_id=("TASKLIST-"+str(uuid.uuid4())))
+                self.lists.update({tasklist.list_id : tasklist})
+                logger.info(f"CREATE LIST: New list created with title: <{list_name}>")
+                return {"message": f"Created list with title <{list_name}>",
+                        "data": tasklist,
+                        "status": True}
         
-        logger.warning(f"CREATE LIST: List with title <{list_name}> exists.")
-        return {"message": f"List with title <{list_name}> already exists!",
-                "data": None,
-                "status": False}
+            logger.warning(f"CREATE LIST: List with title <{list_name}> exists.")
+            return {"message": f"List with title <{list_name}> already exists!",
+                    "data": None,
+                    "status": False}
 
 
     def rename_list(self, old_list_name, new_list_name):
@@ -76,7 +77,7 @@ class ListManager:
     def import_data(self, data_dir):
         try:
             for id in data_dir.keys():
-                self.lists.update({id: data_dir[id]["list_name"]})
+                self.lists.update({id: data_dir[id]})
             logger.info(f"LIST DATA IMPORT: Data imported successfully.")
             return {"message": None,
                     "status": True}
@@ -92,3 +93,28 @@ class ListManager:
         for list in self.lists.values():
             lists.append(list)
             return lists 
+
+    def load_lists(self, listname="My List 1"):
+        print(self.lists)
+        input("enter any option: ")
+        for tlist in self.lists.values():
+            if not listname == tlist["list_name"]:
+                continue
+            task_list = TaskManager(list_id= tlist["list_id"],list_name = tlist["list_name"])
+            for task in tlist["tasks"]:
+                task_list.add_task(
+                    title=task["task_name"],
+                    task_id=task["task_id"],
+                    task_status=task["status"],
+                    task_desc=task["task_description"],
+                    task_filter=task["task_filter"]
+                )
+            logger.info(f"LOAD TASK-LIST: Task list with name <{listname}> was loaded.")
+            return {"message": None,
+                    "status": True,
+                    "data": task_list}
+        logger.error(f"LOAD LIST ERROR: Tasklist with name <{listname}> not found in the database")
+        return {"message": f"Tasklist <{listname}> not found",
+                "status": False,
+                "data": None}
+    
