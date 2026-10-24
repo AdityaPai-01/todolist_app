@@ -4,11 +4,6 @@ import time, os, sys
 from manager.list_manager import ListManager
 from manager.task_manager import TaskManager
 
-if getattr(sys, 'frozen', False): #Running script as .exe
-    BaseDirectory = Path(sys.executable).resolve().parent.parent.parent
-else: #Running script as a script
-    BaseDirectory = Path(__file__).resolve().parent.parent.parent
-
 List_Manager = ListManager()
 
 def save_ldata(data_manager):
@@ -18,7 +13,7 @@ def save_ldata(data_manager):
 
 def import_ldata(data_manager):
     data_load = data_manager.load_data()
-    if data_load:
+    if data_load["status"]:
         List_Manager.import_data(data_load["data"])
 
 def clear():
@@ -59,11 +54,10 @@ def app(condition, data_manager, username):
     print("Have a productive time with πTasks!")
     time.sleep(2.5)
     clear()
+    working_list = List_Manager.load_lists()
     while condition:
-        working_list = List_Manager.new_list()
-        if not working_list["status"]:
-            working_list = List_Manager.load_lists()
         option = input("Enter your option (type '!h' for help) >>>: ").lower().strip()
+        clear()
         if option == "!q":
             break
 

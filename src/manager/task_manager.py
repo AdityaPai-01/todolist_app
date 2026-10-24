@@ -15,7 +15,7 @@ class TaskManager:
                     task_id=("TASK-"+str(uuid.uuid4())) if not task_id else task_id, 
                     task_description= task_desc, 
                     task_filter=task_filter,
-                    is_completed=False if task_status == '⭕' else True)
+                    is_completed=False if task_status == '⭕' or False else task_status)
         
         self.tasklist.append(task)
         logger.info(f"TASK CREATE: Created new task with title <{title}> in list <{self.list_name}>")
