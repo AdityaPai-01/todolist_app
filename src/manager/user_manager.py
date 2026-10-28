@@ -22,19 +22,19 @@ class UserManager():
                     "status": False}
         for user in self.users.values():
             if user.username == username:
-                self.authenticatedUser.update({"uid":user.userID, "uname":user.username})
+                self.authenticatedUser.update({"uid":user.userID, "user_data":{"uname":user.username, "metadata":user.metadata}})
         logger.info("USER LOGIN: User logged in successfully")
         return {"message": "Login successful!",
                 "status": True}
 
     # Register function, enables the user to register themselves (create an account) in the application's database
-    def register(self, Username, Password):
+    def register(self, Username, Password, Meta_Data=None):
         if Username in self.userauthdata.keys():
             logger.warning("USER REGISTERATION: User '%s' already exists", Username)
             return {"message": f"User [{Username}] already exists!",
                     "status": False}
         else:
-            newUser = User(Username, Password)
+            newUser = User(Username, Password, metadata=Meta_Data)
             self.users.update({newUser.userID: newUser})
             logger.info("USER REGISTERATION: User '%s' registered successfully", Username)
             return {"message": "User successfully registered!",
@@ -74,6 +74,7 @@ class UserManager():
     #Seperates and collects only the data required for login/registeration functions
     def authdata(self):
         try:
+            self.userauthdata = {}
             for k, v in self.users.items():
                 for key, value in v.userdict()["data"].items():
                     self.userauthdata.update({value["Username"] : value["Password"]})
@@ -84,3 +85,36 @@ class UserManager():
             logger.error("USER DATA AUTHENTICATION: Authentication data loading failed: %s", f"{type(e).__name__}:{e}")
             return {"message": f"{type(e).__name__}:{e}",
                     "status": False}
+
+    def rename_user(self, current_username, new_username, password):
+        user_id = self.authenticatedUser.get("uid")
+        user = self.users.get(user_id)
+        if user is None or user.username != current_username:
+            return {"message": "The signed-in user could not be found.",
+                    "status": False}
+        if user.password != password:
+            return {"message": "Incorrect password.",
+                    "status": False}
+        if new_username in self.userauthdata and new_username != current_username:
+            return {"message": f"Username [{new_username}] is already in use.",
+                    "status": False}
+
+        user.username = new_username
+        self.userauthdata.pop(current_username, None)
+        self.userauthdata[new_username] = password
+        self.authenticatedUser["user_data"]["uname"] = new_username
+        logger.info("USER RENAME: Username changed successfully")
+        return {"message": "Username changed successfully.",
+                "status": True}
+
+    def delete_user(self, username, password):
+        for uv in self.users.values():
+            for v in uv.userdict()["data"].values():
+                if username == v["Username"] and password == v["Password"]:
+                    self.users.pop(v["UserID"]), self.userauthdata.pop(v["UserID"])
+                    logger.info(f"DELETE USER: User with username <{username}> and userID <{v["UserID"]}> is deleted.")
+                    return {"message": "Your account has been deleted.",
+                            "status": True}
+        logger.warning(f"DELETE USER: User with username <{username}> not found.")
+        return {"message": f"User with username <{username}> not found.",
+                "status": False}

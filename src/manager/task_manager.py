@@ -25,7 +25,7 @@ class TaskManager:
     # Deletes the task from the todolist
     def delete_task(self, title: str):
         for task in self.tasklist:
-            if title == task.to_dict()['taskname']:
+            if title == task.to_dict()['task_name']:
                 self.tasklist.remove(task)
                 logger.info(f"TASK DELETE: Deleted task with title <{title}> in list <{self.list_name}>.")
                 return {"message":'Task removed from your todolist!',

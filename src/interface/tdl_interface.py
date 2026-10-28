@@ -8,10 +8,34 @@ from rich.theme import Theme
 
 from manager.list_manager import ListManager
 from manager.task_manager import TaskManager
+from interface.ul_interface import user_settings_interface
 
 List_Manager = ListManager()
-console_theme = Theme({"title-card": "#9966CC", "desc-card":"#C8A2C8"})
-console = Console(theme=console_theme)
+themes = {"raspberry": 
+          {"title-card": "#9966CC",
+            "desc-card": "#B284BE",
+            "header-card": "bold",
+            "warning-card": "bold italic #8B004B"},
+
+            "tangerine":
+            {"title-card":"#FF4F00",
+             "desc-card": "#FF7F50",
+             "header-card":"bold #FBCEB1",
+             "warning-card":"bold italic #BF5700"},
+
+             "apple":
+             {"title-card":"#FE6F5E",
+              "desc-card":"#AB274F",
+              "header-card":"bold #FDBCB4",
+              "warning-card": "bold italic #800020"},
+
+              "fresh":
+              {"title-card": "#76FF7A",
+               "desc-card": "#29AB87",
+               "header-card": "bold #E3F988",
+               "warning-card": "bold italic #00693E"}
+             }
+
 
 def save_ldata(data_manager):
     listdata_export = List_Manager.export_data()
@@ -44,8 +68,14 @@ def remove_task(list_object: TaskManager, task_title):
 def update_task_details(list_object: TaskManager, params):
     return None
 
-def show_tasks(list_object: TaskManager):
-    return list_object.show_tasks()
+def show_tasks(list_object: TaskManager, con):
+    tasks = list_object.show_tasks()
+    if tasks:
+        con.print("[header-card]Your current todolist: [/]")
+        for task in tasks:
+            con.print(task)
+    else:
+        con.print(tasks)
 
 def mark_done(list_object: TaskManager, task_title):
     return list_object.mark_done(task_title)
@@ -57,13 +87,13 @@ def change_working_list(listname):
     new_list = List_Manager.load_lists(listname)
     return new_list
 
-def show_lists():
+def show_lists(con):
     all_lists = List_Manager.return_lists()
     for tlist in all_lists:
-        print(tlist.list_name)
+        con.print(f"[title-card]{tlist.list_name}[/]")
 
-def help():
-    functions = {
+
+functions = {
         "!hp":"help- displays all the functions of the program",
         "!ex":"exit- exits the application",
         "!at":"add task- adds new task in the todolist",
@@ -79,13 +109,7 @@ def help():
         "!sl":"show list- shows all the lists the user has created",
         "!us":"user settings- opens user settings interface" 
     }
-    for k, v in functions.items():
-        name, desc = v.split("-",1)
-        line = Text()
-        line.append(f"{k}: ")
-        line.append(f"<{name}>".ljust(15), style="title-card")
-        line.append(desc)
-        console.print(line)
+
 
 def greet(uname):
     text = Text("Hello, ")
@@ -93,70 +117,113 @@ def greet(uname):
     text.append("!")
     return text
 
-def app(condition, data_manager, username):
+def app(condition, data_manager, username, user_metadata, user_data_manager):
     import_ldata(data_manager)
-    console.print(greet(username))
-    time.sleep(2)
-    clear()
-    working_list = List_Manager.load_lists()
+    con_theme = Theme(themes[user_metadata["selected_theme"]])
+    console = Console(theme=con_theme,color_system="truecolor")
+    working_list = List_Manager.load_lists(user_metadata["default_list"])
     while condition:
+        console.print(greet(username))
+        show_tasks(working_list["data"],console)
         option = console.input("Enter your option [desc-card](type '!hp' for help)[/] >>>: ").lower().strip()
         clear()
         if option == "!ex":
-            break
-
+            return {"message": None,
+                    "status-code":0}
+        
         elif option == "!at":
-            taskname = input("enter task title: ").strip()
+            taskname = console.input("Enter task title: ").strip()
             if not taskname:
-                print("PLEASE ENTER VALID TITLE!")
+                console.print("[warning-card]Please enter a task title.[/]")
                 time.sleep(2)
                 clear()
                 continue
-            task_filter = input("enter task filter: ").strip()
-            task_description = input("enter task description: ").strip()
+            task_filter = console.input("Enter task filter: ").strip()
+            task_description = console.input("Enter task description: ").strip()
             at = add_task(working_list["data"], (taskname, task_filter if task_filter else None, task_description if task_description else None))
-            print(at["message"])
+            console.print(at["message"])
             save_ldata(data_manager)
             time.sleep(2)
 
         elif option == "!st":
-            tasks = show_tasks(working_list["data"])
-            for task in tasks:
-                print(task)
-            input("enter anything to continue: ")
+            show_tasks(working_list["data"], console)
+            console.input("Press Enter to continue: ")
 
         elif option == "!hp":
-            help()
-            input("enter anything to continue: ")
+            for k, v in functions.items():
+                name, desc = v.split("-",1)
+                line = Text()
+                line.append(f"{k}: ")
+                line.append(f"<{name}>".ljust(15), style="title-card")
+                line.append(desc)
+                console.print(line)
+            console.input("Press Enter to continue: ")
 
         elif option == '!dt':
-            print(remove_task(working_list["data"], task_title=console.input("Enter [desc-card]taskname[/] to [red]delete[/]: ").strip())["message"])
+            console.print(remove_task(working_list["data"], task_title=console.input("Enter task name to delete: ").strip())["message"])
             time.sleep(2)
+
         elif option == '!md':
-            print(mark_done(working_list["data"], task_title=console.input("Enter [desc-card]taskname[/] to [green]mark done[/]: ").strip())["message"])
+            console.print(mark_done(working_list["data"], task_title=console.input("Enter task name to mark done: ").strip())["message"])
             time.sleep(2)
+
         elif option == '!mp':
-            print(mark_pending(working_list["data"], task_title=console.input("Enter [desc-card]taskname[/] to [#FF7F50] mark pending [/]: ").strip())["message"])
+            console.print(mark_pending(working_list["data"], task_title=console.input("Enter task name to mark pending: ").strip())["message"])
             time.sleep(2)
+
         elif option == "!nl":
-            print(create_newlist(console.input("Enter [desc-card]list-name[/]: "))["message"])
+            console.print(create_newlist(console.input("Enter list name: "))["message"])
             time.sleep(2)
+
         elif option == "!dl":
-            print(delete_existinglist(console.input("Enter [desc-card]list-name[/] to [red]delete[/]: "))["message"])
-            time.sleep(2)
+            listname = console.input("Enter list name to delete: ").strip()
+            if not working_list["data"].list_name == listname:
+                console.print(delete_existinglist(listname)["message"])
+                time.sleep(2)
+            else:
+                console.print(f"The list [red]<{listname}>[/] is currently being used, hence it can't be deleted!")
+                time.sleep(2)
+
         elif option == "!cl":
-            console.print("[bold]All available lists: [/]")
-            show_lists()
-            working_list = change_working_list(console.input("Enter [desc-card]listname[/] to select list: "))
-            print(working_list["message"])
+            console.print("[header-card]All available lists: [/]")
+            show_lists(console)
+            working_list = change_working_list(console.input("Enter list name to select: "))
+            console.print(working_list["message"])
             time.sleep(2)
+
         elif option == '!sl':
-            console.print("[bold]All available lists: [/]")
-            show_lists()
-            input("enter anything to exit: ")
+            console.print("[header-card]All available lists: [/]")
+            show_lists(console)
+            console.input("Press Enter to return: ")
+            
         elif option == "!wl":
             console.print(f"Current working list: [title-card]{working_list["data"].list_name}[/]")
             time.sleep(3)
+
+        elif option == "!us":
+            user_settings = user_settings_interface(
+                username,
+                theme=con_theme,
+                all_themes=themes,
+                user_metadata=user_metadata,
+                user_data_manager=user_data_manager,
+                available_lists=List_Manager.return_lists(),
+            )
+            if user_settings["status-code"] == 1:
+                return {"message": None,
+                        "status-code":1}
+            elif user_settings["status-code"] == 2:
+                con_theme = Theme(themes[user_metadata["selected_theme"]])
+                console = Console(theme=con_theme, color_system="truecolor")
+            elif user_settings["status-code"] == 3:
+                working_list = List_Manager.load_lists(
+                    user_settings["default_list"]
+                )
+            elif user_settings["status-code"] == 4:
+                username = user_settings["username"]
+        else:
+            console.print("[warning-card]PLEASE ENTER A VALID OPTION[/]")
+            time.sleep(2)
         print()
         save_ldata(data_manager)    
         clear()

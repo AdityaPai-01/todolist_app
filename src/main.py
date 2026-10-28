@@ -1,17 +1,24 @@
-import logging, sys, os
+import logging
+import sys
 from pathlib import Path
 
-from interface.ul_interface import User_Manager, U_main
-from interface.tdl_interface import List_Manager, app
+if getattr(sys, "frozen", False):
+    BaseDirectory = Path(sys.executable).resolve().parent.parent
+else:
+    BaseDirectory = Path(__file__).resolve().parent.parent
+
+DataDir = BaseDirectory / "data"
+DataDir.mkdir(parents=True, exist_ok=True)
+
 from logging_config import setup_log
+setup_log(DataDir / "log_data.log")
+
+# Import application modules after logging has been initialized.
+from interface.ul_interface import User_Manager, user_login
+from interface.tdl_interface import List_Manager, app
 from manager.data_manager import JSONStorage
 
 logger = logging.getLogger(__name__)
-
-if getattr(sys, 'frozen', False): #Running script as .exe
-    BaseDirectory = Path(sys.executable).resolve().parent.parent
-else: #Running script as a script
-    BaseDirectory = Path(__file__).resolve().parent.parent
 
 def init(token, user_id):
     if token == "U":
@@ -39,7 +46,7 @@ def user_auth_init():
         if userdata_import["status"] and auth_data["status"]:
             logger.info("INITIALIZE: User Authentication initialised successfully.")
 
-            Authenticated_User = U_main(storage)
+            Authenticated_User = user_login(storage)
             if Authenticated_User["status"]:
                 logger.info("INITIALIZE: User Authentication executed successfully.")
                 return {"status": True,
@@ -90,19 +97,29 @@ def list_manager_init(user_id):
                 "data": None,
                 "message": f"{type(e).__name__}:{e}"}
 
-app_run = False
-if __name__ == '__main__':
-    setup_log()
-    auth = user_auth_init()
-    if not auth.get("status"):
-        print(auth.get("message"))
-        
-    # Load the user's lists only after authentication succeeds.
-    list_init = list_manager_init(auth["data"]["uid"])
-    if not list_init.get("status"):
-        print(list_init.get("message"))
+while True:
+    app_run = False
+    if __name__ == '__main__':
+        auth = user_auth_init()
+        if not auth.get("status"):
+            print(auth.get("message"))
+            
+        # Load the user's lists only after authentication succeeds.
+        list_init = list_manager_init(auth["data"]["uid"])
+        if not list_init.get("status"):
+            print(list_init.get("message"))
 
-    # Status true, app ready to work    
-    app_run = True
-    app(app_run,list_init.get("data"), auth["data"]["uname"])
-logger.info("MAIN: application closed.")
+        # Status true, app ready to work    
+        app_run = True
+        runtime = app(
+            app_run,
+            list_init.get("data"),
+            auth["data"]["user_data"]["uname"],
+            auth["data"]["user_data"]["metadata"],
+            init("U", None),
+        )
+        if runtime["status-code"] == 1:
+            continue
+        elif runtime["status-code"] == 0:
+            break
+    logger.info("MAIN: application closed.")
