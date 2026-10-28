@@ -57,17 +57,15 @@ class ListManager:
             
 
     def delete_list(self, list_name):
-        if not list_name in self.lists.values():
-            logger.warning(f"DELETE LIST: List with title <{list_name}> does not exist.")
-            return {"message":f"You do not have a list named <{list_name}>!",
-                    "status": False}
-        
-        for k in self.lists.items():
-            if self.lists[k] == list_name:
+        for k,v in self.lists.items():
+            if v.list_name == list_name:
                 self.lists.pop(k)
                 logger.info(f"DELETE LIST: Successfully deleted list with title <{list_name}>.")
                 return {"message": f"List <{list_name}> removed.",
                         "status": True}
+        logger.warning(f"DELETE LIST: List with title <{list_name}> not in the database!")
+        return {"message": f"You do not have any todolist named <{list_name}>!",
+                "status": False}
 
 
     def export_data(self):
@@ -115,7 +113,7 @@ class ListManager:
         lists = []
         for list in self.lists.values():
             lists.append(list)
-            return lists 
+        return lists 
 
     def load_lists(self, listname="My List 1"):
         if self.lists:
@@ -123,7 +121,7 @@ class ListManager:
                 if not listname == tlist.list_name:
                     continue
                 logger.info(f"LOAD TASK-LIST: Task list with name <{listname}> was loaded.")
-                return {"message": None,
+                return {"message": f"Task list with name <{listname}> was loaded.",
                         "status": True,
                         "data": tlist}
         else:

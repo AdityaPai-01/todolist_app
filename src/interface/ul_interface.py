@@ -2,10 +2,17 @@
 # Once the user logs in, the authentication data is passed to the todolist application to load authenticated data.
 
 from pathlib import Path
-import time, os, sys
+import time, os
+
+# For theme and UI styling
+from rich.console import Console
+from rich.text import Text
+from rich.theme import Theme
 
 from manager.user_manager import UserManager
 
+console_theme = Theme({})
+console = Console(theme=console_theme)
 User_Manager = UserManager()
 
 # Clearing the terminal for cleaner UI.
@@ -80,7 +87,7 @@ def save_udata(data_manager):
 def U_main(data_manager):
     while True:
         print("-"*15,"WELCOME TO PyLISTS", "-"*15)
-        option = input("Login or register(L/R/Q for exit) >>>: ").upper().strip()
+        option = console.input("Login or register ([#C51E3A]L[/]/[#90EE90]R[/]/[#6CB4EE]Q[/] for exit) >>>: ").upper().strip()
         if option == "L":
             clear()
             loginmethod = login()
