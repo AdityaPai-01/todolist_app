@@ -8,7 +8,7 @@ from rich.theme import Theme
 
 from manager.list_manager import ListManager
 from manager.task_manager import TaskManager
-from interface.ul_interface import user_settings_interface
+from interface.ul_interface import save_udata, user_settings_interface
 
 List_Manager = ListManager()
 themes = {"raspberry": 
@@ -66,7 +66,15 @@ def remove_task(list_object: TaskManager, task_title):
     return list_object.delete_task(task_title)
 
 def update_task_details(list_object: TaskManager, params):
-    return None
+    key, task_title, new_value = params
+    if key == "title":
+        return list_object.update_taskname(task_title, new_value)
+    if key == "filter":
+        return list_object.update_task_filter(task_title, new_value)
+    if key == "description":
+        return list_object.update_task_desc(task_title, new_value)
+    return {"message": "Please enter title, filter, or description.",
+            "status": False}
 
 def show_tasks(list_object: TaskManager, con):
     tasks = list_object.show_tasks()
@@ -85,7 +93,11 @@ def mark_pending(list_object: TaskManager, task_title):
 
 def change_working_list(listname):
     new_list = List_Manager.load_lists(listname)
-    return new_list
+    if new_list["status"]:
+        return new_list
+    else:
+        print(new_list["message"])
+        return List_Manager.load_lists()
 
 def show_lists(con):
     all_lists = List_Manager.return_lists()
@@ -163,6 +175,36 @@ def app(condition, data_manager, username, user_metadata, user_data_manager):
             console.print(remove_task(working_list["data"], task_title=console.input("Enter task name to delete: ").strip())["message"])
             time.sleep(2)
 
+        elif option == "!ut":
+            key = console.input(
+                "Enter detail to update (title/filter/description): "
+            ).strip().lower()
+            if key == "title":
+                task_title = console.input("Enter old task title: ").strip()
+                new_value = console.input("Enter new task title: ").strip()
+            elif key in ("filter", "description"):
+                task_title = console.input("Enter task title: ").strip()
+
+                #Written by AI
+                prompt = (
+                    "Enter new task filter: "
+                    if key == "filter"
+                    else "Enter new task description: "
+                )
+                new_value = console.input(prompt).strip()
+                
+            else:
+                console.print(
+                    "[warning-card]Please enter title, filter, or description.[/]"
+                )
+                time.sleep(2)
+                continue
+            result = update_task_details(
+                working_list["data"], (key, task_title, new_value)
+            )
+            console.print(result["message"])
+            time.sleep(2)
+
         elif option == '!md':
             console.print(mark_done(working_list["data"], task_title=console.input("Enter task name to mark done: ").strip())["message"])
             time.sleep(2)
@@ -183,6 +225,29 @@ def app(condition, data_manager, username, user_metadata, user_data_manager):
             else:
                 console.print(f"The list [red]<{listname}>[/] is currently being used, hence it can't be deleted!")
                 time.sleep(2)
+
+        elif option == "!ul":
+            old_list_name = console.input("Enter old list name: ").strip()
+            new_list_name = console.input("Enter new list name: ").strip()
+            if not old_list_name or not new_list_name:
+                result = {"message": "List names cannot be empty.",
+                          "status": False}
+            else:
+                result = update_list((old_list_name, new_list_name))
+                if (
+                    result["status"]
+                    and user_metadata["default_list"] == old_list_name
+                ):
+                    user_metadata["default_list"] = new_list_name
+                    save_result = save_udata(user_data_manager)
+                    if not save_result["status"]:
+                        update_list((new_list_name, old_list_name))
+                        user_metadata["default_list"] = old_list_name
+                        result = {"message": (f"List rename could not be saved: {save_result['message']}"),
+                            "status": False,}
+                        
+            console.print(result["message"])
+            time.sleep(2)
 
         elif option == "!cl":
             console.print("[header-card]All available lists: [/]")

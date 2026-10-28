@@ -103,7 +103,7 @@ while True:
         auth = user_auth_init()
         if not auth.get("status"):
             print(auth.get("message"))
-            
+            break
         # Load the user's lists only after authentication succeeds.
         list_init = list_manager_init(auth["data"]["uid"])
         if not list_init.get("status"):
@@ -122,4 +122,5 @@ while True:
             continue
         elif runtime["status-code"] == 0:
             break
-    logger.info("MAIN: application closed.")
+logger.info("MAIN: application closed.")
+print("Application exited.")

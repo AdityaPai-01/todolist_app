@@ -76,7 +76,7 @@ def register():
                 User_Manager.authdata()
                 return True
 
-def delete_user():
+def delete_user(user_data_manager):
     while True:
         username = input("Enter username: ").strip()
         if username == 'Q':
@@ -86,10 +86,14 @@ def delete_user():
         print(u_validity["message"] if not u_validity["message"] == None else "",end="")
         if u_validity["status"]:
             password = input("Enter password: ").strip()
-            delete = User_Manager.delete_user(username, password)
-            print(delete["message"]), time.sleep(2), print("You will be logged out of your account, application will close."), time.sleep(2)
-            clear()
-            return True
+            delete = User_Manager.delete_user(
+                username, password, user_data_manager.dataPath.parent
+            )
+            print(delete["message"]), time.sleep(2), clear()
+            if delete["status"]: 
+                print("You will be logged out of your account, application will close."), time.sleep(2), time.sleep, clear()
+                return True
+            return False
 
 def change_theme(themes):
     console.print("Available themes:")
@@ -273,8 +277,9 @@ def user_settings_interface(username, theme, all_themes, user_metadata,
                 )
 
         elif option == "!da":
-            delete = delete_user()
+            delete = delete_user(user_data_manager)
             if delete:
+                save_udata(user_data_manager)
                 return {"message": None,
                         "status-code":1}
 

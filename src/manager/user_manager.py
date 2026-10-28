@@ -1,5 +1,7 @@
 from model.user import User
 import logging
+import shutil
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -107,14 +109,49 @@ class UserManager():
         return {"message": "Username changed successfully.",
                 "status": True}
 
-    def delete_user(self, username, password):
-        for uv in self.users.values():
-            for v in uv.userdict()["data"].values():
-                if username == v["Username"] and password == v["Password"]:
-                    self.users.pop(v["UserID"]), self.userauthdata.pop(v["UserID"])
-                    logger.info(f"DELETE USER: User with username <{username}> and userID <{v["UserID"]}> is deleted.")
-                    return {"message": "Your account has been deleted.",
-                            "status": True}
-        logger.warning(f"DELETE USER: User with username <{username}> not found.")
-        return {"message": f"User with username <{username}> not found.",
-                "status": False}
+    def delete_user(self, username, password, data_directory):
+        user = next(
+            (user for user in self.users.values()
+             if user.username == username),
+            None,
+        )
+        if user is None:
+            logger.warning("DELETE USER: User with username <%s> not found.", username)
+            return {"message": f"User with username <{username}> not found.",
+                    "status": False}
+        if user.password != password:
+            logger.warning("DELETE USER: Incorrect password entered for <%s>.", username)
+            return {"message": "Incorrect password entered!",
+                    "status": False}
+
+        # WRITTEN BY AI
+        try:
+            data_root = Path(data_directory).resolve()
+            user_directory = (data_root / user.userID).resolve()
+            if user_directory.parent != data_root:
+                logger.error(
+                    "DELETE USER: Invalid data directory for user <%s>.",
+                    username,
+                )
+                return {"message": "User data directory is invalid.",
+                        "status": False}
+            if user_directory.exists():
+                shutil.rmtree(user_directory)
+        except (OSError, RuntimeError, ValueError) as e:
+            logger.error(
+                "DELETE USER: Could not remove data directory for <%s>: %s",
+                username,
+                f"{type(e).__name__}:{e}",
+            )
+            return {"message": f"User data could not be deleted: {e}",
+                    "status": False}
+
+        self.users.pop(user.userID)
+        self.userauthdata.pop(user.username, None)
+        logger.info(
+            "DELETE USER: User with username <%s> and userID <%s> is deleted.",
+            username,
+            user.userID,
+        )
+        return {"message": "Your account has been deleted.",
+                "status": True}

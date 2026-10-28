@@ -60,8 +60,8 @@ class TaskManager:
         for task in self.tasklist:
             if task.taskname == tasktitle:
                 task.task_filter = new_filter
-                logger.info(f"TASK UPDATED: Changed description of task <{tasktitle}>")
-                return {"message": f"Changed description of task <{tasktitle}>"}
+                logger.info(f"TASK UPDATED: Changed filter of task <{tasktitle}>")
+                return {"message": f"Changed filter of task <{tasktitle}>"}
         logger.warning(f"TASK RENAME: failed to rename: Task <{tasktitle}> not in list <{self.list_name}>")
         return {"message": f'Task <{tasktitle}> not found in your todolist!',
                 "status": False}

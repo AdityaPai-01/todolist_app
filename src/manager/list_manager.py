@@ -38,22 +38,28 @@ class ListManager:
 
 
     def rename_list(self, old_list_name, new_list_name):
-        if not old_list_name in self.lists.values():
+        tasklist = next(
+            (tasklist for tasklist in self.lists.values()
+             if tasklist.list_name == old_list_name),
+            None,
+        )
+        if tasklist is None:
             logger.warning(f"REMANE LIST: List with title <{old_list_name}> does not exist.")
             return {"message": f"You do not have list with title <{old_list_name}>!",
                     "status": False}
         
-        if new_list_name in self.lists.values():
+        if any(
+            other_list.list_name == new_list_name and other_list is not tasklist
+            for other_list in self.lists.values()
+        ):
             logger.warning(f"RENAME LIST: List with the title <{new_list_name}> already exists.")
             return {"message": f'List with the title <{new_list_name}> already exists.',
                     "status": False}
         
-        for k in self.lists.keys():
-            if self.lists[k] == old_list_name:
-                self.lists[k] == new_list_name
-                logger.info(f"RENAME LIST: List <{old_list_name}> renamed to <{new_list_name}>")
-                return {"message": f"List <{old_list_name}> renamed to <{new_list_name}>",
-                        "status": True}
+        tasklist.list_name = new_list_name
+        logger.info(f"RENAME LIST: List <{old_list_name}> renamed to <{new_list_name}>")
+        return {"message": f"List <{old_list_name}> renamed to <{new_list_name}>",
+                "status": True}
             
 
     def delete_list(self, list_name):
