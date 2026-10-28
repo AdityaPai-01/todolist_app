@@ -45,7 +45,27 @@ class TaskManager:
         logger.warning(f"TASK RENAME: failed to rename: Task <{oldtitle}> not in list <{self.list_name}>")
         return {"message": f'Task <{oldtitle}> not found in your todolist!',
                 "status": False}
-    
+
+    def update_task_desc(self, tasktitle, new_desc):
+        for task in self.tasklist:
+            if task.taskname == tasktitle:
+                task.task_description = new_desc
+                logger.info(f"TASK UPDATED: Changed description of task <{tasktitle}>")
+                return {"message": f"Changed description of task <{tasktitle}>"}
+        logger.warning(f"TASK RENAME: failed to rename: Task <{tasktitle}> not in list <{self.list_name}>")
+        return {"message": f'Task <{tasktitle}> not found in your todolist!',
+                "status": False}
+
+    def update_task_filter(self, tasktitle, new_filter):
+        for task in self.tasklist:
+            if task.taskname == tasktitle:
+                task.task_filter = new_filter
+                logger.info(f"TASK UPDATED: Changed description of task <{tasktitle}>")
+                return {"message": f"Changed description of task <{tasktitle}>"}
+        logger.warning(f"TASK RENAME: failed to rename: Task <{tasktitle}> not in list <{self.list_name}>")
+        return {"message": f'Task <{tasktitle}> not found in your todolist!',
+                "status": False}
+            
     def show_tasks(self, filter=None):
         if filter == None:
             return [str(t) for t in self.tasklist] if self.tasklist else ['Your task list is empty!']
@@ -99,6 +119,17 @@ class TaskManager:
                 logger.info(f"TASK MARKED DONE: Marked task <{title}> completed in list <{self.list_name}>")
                 return {"message":f"Task <{title}> marked as completed!",
                         "status": True}
+        logger.warning(f"TASK MARKED DONE: failed to mark task: Task <{title}> not in list <{self.list_name}>")
+        return {"message":f"Task <{title}> not found in your todolist!",
+                "status": False}
+
+    def mark_undone(self, title):
+        for task in self.tasklist:
+            if task.taskname == title:
+                task.is_completed = False
+                logger.info(f"TASK MARKED PENDING: Marked task <{title}> pending in list <{self.list_name}>")
+                return {"message":f"Task <{title}> marked as pending!",
+                                "status": True}
         logger.warning(f"TASK MARKED DONE: failed to mark task: Task <{title}> not in list <{self.list_name}>")
         return {"message":f"Task <{title}> not found in your todolist!",
                 "status": False}

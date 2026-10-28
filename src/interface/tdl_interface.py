@@ -28,20 +28,23 @@ def delete_existinglist(listname):
 def rename_existinglist(old_listname, new_listname):
     return List_Manager.rename_list(old_listname, new_listname)
 
-def add_task(list_object, params):
+def add_task(list_object: TaskManager, params):
     return list_object.add_task(*params)
 
-def remove_task(list_object):
-    pass
+def remove_task(list_object: TaskManager, task_title):
+    return list_object.delete_task(task_title)
 
-def update_task_details(list_object):
-    pass
+def update_task_details(list_object: TaskManager, params):
+    return None
 
-def show_tasks(list_object):
+def show_tasks(list_object: TaskManager):
     return list_object.show_tasks()
 
-def mark_done(list_object):
-    pass
+def mark_done(list_object: TaskManager, task_title):
+    return list_object.mark_done(task_title)
+
+def mark_pending(list_object: TaskManager, task_title):
+    return list_object.mark_undone(task_title)
 
 def app(condition, data_manager, username):
     import_ldata(data_manager)
@@ -63,8 +66,13 @@ def app(condition, data_manager, username):
 
         elif option == "!nt":
             taskname = input("enter task title: ").strip()
+            if not taskname:
+                print("PLEASE ENTER VALID TITLE!")
+                time.sleep(2)
+                clear()
+                continue
             task_filter = input("enter task filter: ").strip()
-            task_description = input("enter task description: ")
+            task_description = input("enter task description: ").strip()
             at = add_task(working_list["data"], (taskname, task_filter if task_filter else None, task_description if task_description else None))
             print(at["message"])
             save_ldata(data_manager)
