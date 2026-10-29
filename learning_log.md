@@ -29,3 +29,21 @@ The main objective of this project is to learn how to integrate different system
 
 
 ### FINAL THOUGHTS: Overall review of the project
+**1. Objective:**
+The primary objective of this project was to improve my ability to design and structure software systems. I focused on establishing effective relationships between classes, maintaining reliable data flow, minimising errors, and separating logic and responsibilities across different components.
+
+**2. Key Takeaways:**
+- **Software architecture:** Learned to organise classes and functions around distinct responsibilities.
+- **Data management:** Gained practical experience managing nested dictionaries and JSON persistence.
+- **Integration:** Combined two existing projects and extended them with new functionality while maintaining consistency.
+- **Debugging and error handling:** Identified and resolved errors, added exception handling, and tested edge cases.
+- **AI-assisted development:** Learned to evaluate, modify, and integrate AI-generated code rather than accepting it without review.
+- **Code comprehension:** Improved my ability to trace program execution and understand how different components interact.
+
+**3. Limitations and Improvements:**
+- Exception handling for corrupted JSON files needs improvement, particularly around safe recovery and data preservation.
+- Automated testing could be expanded to cover critical functionality and edge cases.
+- The project could benefit from further improvements to validation, maintainability, and overall reliability.
+
+**4. Conclusion:**
+This project helped me move beyond writing individual functions towards understanding how different components work together as a system. However, reviewing the codebase made me realise that much of the project relied on nested dictionaries and data management, a skill I was already familiar with. This is why I feel the project offered less growth than I had hoped. Going forward, I want to explore more advanced, real-world concepts, understand the reasoning behind different data structures and algorithms, and build applications that solve meaningful problems.
