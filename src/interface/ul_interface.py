@@ -1,6 +1,8 @@
 # This module contains functions related to the user-login interface.
 # Once the user logs in, the authentication data is passed to the todolist application to load authenticated data.
 
+# This module also contains UI functions concerning user-related settings for the application
+
 from pathlib import Path
 import time, os
 
@@ -11,8 +13,7 @@ from rich.theme import Theme
 
 from manager.user_manager import UserManager
 
-console_theme = Theme({})
-console = Console(theme=console_theme)
+console = Console()
 User_Manager = UserManager()
 default_metadata = {"selected_theme": "raspberry",
                     "default_list": "My List 1"}
@@ -42,7 +43,7 @@ def check_username_validity(username):
 # Allows the user to login to their account   
 def login():
     while True:
-        Username = input("Enter your username: ").strip()
+        Username = console.input("Enter your username [red](Q to exit)[/]: ").strip()
         if Username == 'Q':
             clear()
             return {"status": False,
@@ -59,7 +60,7 @@ def login():
 # Allows the new user to create a new account      
 def register():
     while True:
-        Username = input("Enter username: ").strip()
+        Username = console.input("Enter username [red](Q to exit)[/]: ").strip()
         if Username == 'Q':
             clear()
             return False        
@@ -76,9 +77,10 @@ def register():
                 User_Manager.authdata()
                 return True
 
+# Allows the user to delete their account and data from the database
 def delete_user(user_data_manager):
     while True:
-        username = input("Enter username: ").strip()
+        username = console.input("Enter username [red](Q to exit)[/]: ").strip()
         if username == 'Q':
             clear()
             return False
@@ -95,6 +97,7 @@ def delete_user(user_data_manager):
                 return True
             return False
 
+# Allows the user to change their application colour theme
 def change_theme(themes):
     console.print("Available themes:")
     for theme_name, theme_styles in themes.items():
@@ -128,6 +131,7 @@ def change_theme(themes):
         if answer != "n":
             console.print("Please enter y or n.")
 
+# Allows the user to change their username
 def change_username(username, user_data_manager):
     password = console.input("Enter your password to confirm: ").strip()
     if not password or password.upper() == "Q":
@@ -158,6 +162,7 @@ def change_username(username, user_data_manager):
             "status": True,
             "username": new_username}
 
+# Allows the user to set a default list to start whenever they log-in
 def select_default_list(available_lists):
     if not available_lists:
         console.print("No lists are available to select.")
@@ -178,7 +183,7 @@ def select_default_list(available_lists):
                 return selected_list
         console.print("Please enter one of the listed names.")
 
-def change_password():
+def change_password(): # Functionality not added yet
     pass
 
 # Saves the data created during the runtime of the process (if any)            
@@ -193,6 +198,7 @@ def save_udata(data_manager):
         return {"status": False,
                 "message": userdata_export["message"]}
 
+# Interface process for user login and registeration
 def user_login(data_manager):
     while True:
         print("-"*15,"WELCOME TO PyLISTS", "-"*15)
@@ -213,6 +219,7 @@ def user_login(data_manager):
         time.sleep(2)
         clear()
 
+# Interface process for user-related settings
 def user_settings_interface(username, theme, all_themes, user_metadata,
                             user_data_manager, available_lists):
     usi_console = Console(theme=theme)

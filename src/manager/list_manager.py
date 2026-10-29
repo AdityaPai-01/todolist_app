@@ -7,6 +7,7 @@ class ListManager:
     def __init__(self):
         self.lists = {}
 
+    # Creating a new list
     def new_list(self, list_name="My List 1"):
         try:
             if self.lists:
@@ -36,7 +37,7 @@ class ListManager:
                     "status": False,
                     "data": None}
 
-
+    # Renaming an existing list
     def rename_list(self, old_list_name, new_list_name):
         tasklist = next(
             (tasklist for tasklist in self.lists.values()
@@ -61,7 +62,7 @@ class ListManager:
         return {"message": f"List <{old_list_name}> renamed to <{new_list_name}>",
                 "status": True}
             
-
+    # Deletes a specified list, if it exists
     def delete_list(self, list_name):
         for k,v in self.lists.items():
             if v.list_name == list_name:
@@ -73,7 +74,7 @@ class ListManager:
         return {"message": f"You do not have any todolist named <{list_name}>!",
                 "status": False}
 
-
+    # Exports the list data
     def export_data(self):
         try:
             data = {}
@@ -91,7 +92,7 @@ class ListManager:
                     "status": False,
                     "data": {}}
 
-
+    # Importing extracted saved data for proper functioning
     def import_data(self, data_dir):
         try:
             for id in data_dir.keys():
@@ -114,7 +115,7 @@ class ListManager:
             return {"message": "something went wrong.",
                     "status": False}
 
-
+    # Returns the lists of all todolist the user has
     def return_lists(self):
         lists = []
         for list in self.lists.values():
@@ -132,7 +133,8 @@ class ListManager:
                         "data": tlist}
         else:
             return self.new_list(listname)
-        logger.error(f"LOAD LIST ERROR: Tasklist with name <{listname}> not found in the database")
-        return {"message": f"Tasklist <{listname}> not found",
-                "status": False,
-                "data": None}
+        for tlist in self.lists.values(): # Returns the first available list in the application
+            logger.error(f"LOAD LIST ERROR: Tasklist with name <{listname}> not found in the database")
+            return {"message": f"Tasklist <{listname}> not found",
+                    "status": False,
+                    "data": tlist}

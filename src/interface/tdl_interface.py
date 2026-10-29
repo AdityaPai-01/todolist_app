@@ -130,10 +130,20 @@ def greet(uname):
     return text
 
 def app(condition, data_manager, username, user_metadata, user_data_manager):
-    import_ldata(data_manager)
-    con_theme = Theme(themes[user_metadata["selected_theme"]])
-    console = Console(theme=con_theme,color_system="truecolor")
-    working_list = List_Manager.load_lists(user_metadata["default_list"])
+    try:
+        import_ldata(data_manager)
+        con_theme = Theme(themes[user_metadata["selected_theme"]])
+        console = Console(theme=con_theme,color_system="truecolor")
+        working_list = List_Manager.load_lists(user_metadata["default_list"])
+        if not working_list["status"]:
+            console.print(
+                """[warning-card] WARNING: YOUR DEFAULT LIST IS NOT SET APPROPRIATELY.
+    PLEASE SET AN APPROPRIATE DEFAULT LIST BY GOING INTO USER SETTINGS '!us'[/]
+                """,
+                )
+    except Exception as e:
+        return {"message": f"ERROR INITIALISING THE APPLICATION: {e}",
+                "status-code":0}
     while condition:
         console.print(greet(username))
         show_tasks(working_list["data"],console)

@@ -2,6 +2,7 @@ import logging
 import sys
 from pathlib import Path
 
+# WRITTEN BY AI
 if getattr(sys, "frozen", False):
     BaseDirectory = Path(sys.executable).resolve().parent.parent
 else:
@@ -20,6 +21,7 @@ from manager.data_manager import JSONStorage
 
 logger = logging.getLogger(__name__)
 
+# Initialises class-specific data handlers
 def init(token, user_id):
     if token == "U":
         DataDir = BaseDirectory / "data"
@@ -67,7 +69,7 @@ def user_auth_init():
                 "message": f"{type(e).__name__}:{e}"}
 
 """
-    - Initialises the authenticated user's list data management object
+    - Initialises the authenticated user's list data management class
     - Data is loaded, and passed to list manager for further use
 """
 def list_manager_init(user_id):

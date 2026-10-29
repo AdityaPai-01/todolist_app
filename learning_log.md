@@ -26,3 +26,6 @@ The main objective of this project is to learn how to integrate different system
 - Importing an object or variable from another module does not automatically create a new instance or dynamically update a previously imported reference when the original module reassigns that variable.
 - Objects that depend on user authentication should be initialized only after the authenticated user is known. A function can create and return the appropriate data manager when needed, rather than relying on an object instantiated prematurely at module level.
 - Using functions to initialize and return objects when required can make the application lifecycle easier to manage and prevent dependencies from being initialized before their required data is available.
+
+
+### FINAL THOUGHTS: Overall review of the project
